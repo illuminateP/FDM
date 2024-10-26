@@ -1,14 +1,14 @@
 const express = require('express');
 
-var session = require('express-session');
-var MysqlStore = require('express-mysql-session')(session);
-var bodyparser = require('body-parser');
+const session = require('express-session');
+const MysqlStore = require('express-mysql-session')(session);
+const bodyparser = require('body-parser');
 
-var db = require('./lib/db');
-var authorRouter = require('./router/authorRouter');
-var rootRouter = require('./router/rootRouter');
+const db = require('./lib/db');
+const authorRouter = require('./router/authorRouter');
+const rootRouter = require('./router/rootRouter');
 
-var options = {
+const options = {
     host : 'localhost',
     user : 'root',
     password : 'root',
