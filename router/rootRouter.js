@@ -2,35 +2,59 @@ const express = require('express');
 const router = express.Router();
 
 
-const topic = require('../lib/topic');
+const page = require('../lib/page');
 const author = require('../lib/author');
 
 router.get('/',(req, res) => {
-    topic.home(req, res);
+    page.login_page(req, res);
 });
 
+router.get('/login', (req, res) => {
+    page.login(req, res);
+});
+
+router.post('/login_process',(req, res) => {
+    page.login_process(req, res);
+});
+
+router.get('/logout_process',(req, res) => {
+    page.logout_process(req, res);
+});
+
+router.get('/register',(req, res) => {
+    page.register(req,res);
+});
+
+router.get('/findPassword',(req,res) => {
+    page.findPassword(req,res);
+})
+
+router.get('/home',(req, res) => {
+    page.home(req,res);
+})
+
 router.get('/page/:id', (req,res) =>{
-    topic.page(req,res);
+    page.page(req,res);
 });
 
 router.get('/create', (req,res) => {
-    topic.create(req, res);
+    page.create(req, res);
 });
 
 router.post('/create_process',(req, res) => {
-    topic.create_process(req, res);
+    page.create_process(req, res);
 });
 
 router.get('/update/:pageId', (req, res) => {
-    topic.update(req, res);
+    page.update(req, res);
 });
 
 router.post('/update_process', (req, res) => {
-    topic.update_process(req, res);
+    page.update_process(req, res);
 });
 
 router.get('/delete/:pageId', (req, res) => {
-    topic.delete_process(req, res);
+    page.delete_process(req, res);
 });
 
 router.get('/author', (req, res) => {
@@ -53,16 +77,5 @@ router.get('/author/delete/:pageId', (req, res) => {
     author.delete_process(req, res);
 });
 
-router.get('/login', (req, res) => {
-    topic.login(req, res);
-});
-
-router.post('/login_process',(req, res) => {
-    topic.login_process(req, res);
-});
-
-router.get('/logout_process',(req, res) => {
-    topic.logout_process(req, res);
-});
 
 module.exports = router;
