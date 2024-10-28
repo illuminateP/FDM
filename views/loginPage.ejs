@@ -2,59 +2,37 @@
 <html>
 <head>
     <title>FDM Stands for Fine Data Mine!</title>
-    <meta charset="utf-8">
-    <link rel="icon" href="data:,"> <!-- favicon 처리 -->
+    <meta charset='utf-8'>
+    <link rel='icon' href='data:,'> <!-- favicon 처리 -->
 </head>
 
 <body>
     <h1>Welcome to FDM: Fine Data Mine!!!</h1>
-    <h3>made by:</h3>
+
     
     <!-- 로그인 폼 -->
-    <div id="login-form">
-        <form action="/login" method="post">
-            <label for="userId">ID:</label>
-            <input type="text" id="userId" name="userId" required><br><br>
+    <div id='login-form'>
+        <form action='/login_process' method='post'>
+            <label for='username'>ID:</label>
+            <input type='text' id='username' name='username' required><br><br>
 
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required><br><br>
+            <label for='password'>Password:</label>
+            <input type='password' id='password' name='password' required><br><br>
 
-            <button type="submit">Login</button>
+            <button type='submit'>Login</button>
         </form>
 
-        <!-- 회원가입 링크에 onclick 이벤트 추가, # 떼는 방법 고민해 볼 것 -->
-        <h5><a href="#" onclick="showRegisterForm()">회원가입</a></h5>
-        <h5><a href="/findPassword">비밀번호 찾기</a></h5>
+        <h5><a href='/register'>회원가입</a></h5>
+        <h5><a href='/findPassword'>비밀번호 찾기</a></h5>
+        <button id="proxyBtn">로그인 없이 이용하기</button>
+
+        <script>
+            document.getElementById('proxyBtn').onclick = function() {
+                window.location.href = '/proxy_login'; 
+            };
+        </script>
     </div>
-
-    <!-- 회원가입 폼 (처음에는 숨김 처리) -->
-    <div id="register-form" style="display: none;">
-        <form action="/register" method="post">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required><br><br>
-
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required><br><br>
-
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required><br><br>
-
-            <button type="submit">회원가입</button>
-        </form>
-        <!-- 로그인으로 돌아가기 링크에 onclick 이벤트 추가, # 떼는 방법 mainrouter로 넘겨서 라우팅 하면 되는데 생각해 볼 것 -->
-        <h5><a href="#" onclick="showLoginForm()">돌아가기</a></h5>
-    </div>
-
-    <script>
-        function showRegisterForm() {
-            document.getElementById("login-form").style.display = "none";
-            document.getElementById("register-form").style.display = "block";
-        }
-
-        function showLoginForm() {
-            document.getElementById("register-form").style.display = "none";
-            document.getElementById("login-form").style.display = "block";
-        }
-    </script>
+    <br><br><br><br>
+    <h3>made by: illuminateP/sincelife777@gmail.com</h3>
 </body>
 </html>

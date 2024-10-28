@@ -8,25 +8,27 @@ const db = require('./lib/db');
 const authorRouter = require('./router/authorRouter');
 const rootRouter = require('./router/rootRouter');
 
+// 세션 DB 정의
 const options = {
     host : 'localhost',
     user : 'root',
     password : 'root',
-    database : 'webdb2024'
-}
+    database : 'dockerProject'
+};
 
-var sessionStore = new MysqlStore(options);
+const sessionStore = new MysqlStore(options);
 
 const app = express();
 
 app.use(session({
-    secret : 'keyboard cat',
+    secret : 'Fine Data Mine VeRsIoN0.0',
     resave : false,
     saveUninitialized : true,
     store : sessionStore
 }));
 
-app.use(bodyparser.urlencoded({extended:false}));
+app.use(bodyparser.urlencoded({ extended: false })); // URL-encoded 데이터 처리
+app.use(bodyparser.json()); // JSON 데이터 처리
 
 app.set('views',__dirname+'/views');
 app.set('view engine','ejs');
