@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>게시판 보기</title>
-    <link rel="stylesheet" href="/styles/tab.css">
+    <title>파일 업로드 테스트</title>
 </head>
+<link rel="stylesheet" href="/styles/tab.css">
 
 <body>
-    <!-- 탭 메뉴 -->
     <div id="tabContainer">
         <button id="tabButton">☰</button>
         <div id="tabs">
@@ -26,15 +25,17 @@
             <button id="authButton">로그인</button>
         </div>
     </div>
-    <div id = "boardsContainer">
 
-    </div>
-    <div class="write-button">
-        <!-- 글 작성 버튼은 boardView.js에서 조건부로 추가 -->
-    </div>
+    <div id="content">
+    <h1>파일 업로드 테스트</h1>
+    <form id="uploadForm">
+        <input type="file" id="fileInput" name="file" required>
+        <button type="submit">업로드</button>
+    </form>
+    <div id="content">
 
-    <script src="scripts/boardView.js"></script>
-    <script src="scripts/tab.js"></script>
 </body>
+<script src="scripts/uploadTest.js"></script>
+<script src="scripts/tab.js"></script>
 
 </html>

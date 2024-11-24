@@ -65,6 +65,20 @@ services:
       - frontend
     restart: always
 
+    
+  minio:
+    image: minio/minio
+    container_name: image-container
+    networks:
+      - app-network
+    environment:
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+    command: server /data
+    volumes:
+    - ./miniO:/data # 로컬 miniO 디렉토리를 MinIO 컨테이너의 /data에 마운트
+    restart: always
+    
 networks:
   app-network:
     driver: bridge
