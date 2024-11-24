@@ -1,7 +1,7 @@
 // 페이지가 로드되기 전에 실행되는 것을 방지.
 document.addEventListener('DOMContentLoaded', () => {
     // 로그인 버튼 클릭 이벤트
-    document.getElementById('loginBtn').onclick = async function () {
+    document.getElementById('authBtn').onclick = async function () {
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
 

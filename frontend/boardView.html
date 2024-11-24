@@ -1,15 +1,37 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>게시판 3</title>
+    <title>게시판 보기</title>
+    <link rel="stylesheet" href="/styles/tab.css">
 </head>
+
 <body>
-    <div id="boards"></div>
+    <!-- 탭 메뉴 -->
+    <div id="tabContainer">
+        <button id="tabButton">☰</button>
+        <div id="tabs">
+            <a href="/home.html">Home</a>
+            <br>
+            <a href="/board/">이미지 업로드 하러 가기</a>
+            <br>
+            <a href="/board2">데이터셋 라벨링 하러 가기</a>
+            <br>
+            <a href="/boardView.html">게시판 보기</a>
+            <br>
+            <a href="/board4">데이터셋 상점 보기</a>
+            <br><br>
+            <button id="authButton">로그인</button>
+        </div>
+    </div>
+
     <div class="write-button">
         <!-- 글 작성 버튼은 JavaScript에서 조건부로 추가 -->
     </div>
     <script src="scripts/boardView.js"></script>
+    <script src="scripts/tab.js"></script>
 </body>
+
 </html>

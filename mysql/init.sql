@@ -28,7 +28,7 @@ CREATE TABLE person (
 
 -- 관리자 계정 초기값 추가
 INSERT INTO person (loginid, password, name, address, tel, birth, class, grade, point)
-VALUES ('m', 'm', '관리자', '서울', '010', '00000000', 'MNG', 'S', 0);
+VALUES ('m', 'm', 'manager', 'seoul', '010', '00000000', 'MNG', 'S', 0);
 
 -- 게시판 테이블 정의
 CREATE TABLE board (
@@ -42,10 +42,6 @@ CREATE TABLE board (
     content TEXT NOT NULL -- 게시글 내용
 );
 
--- 게시판 초기 데이터 추가
-INSERT INTO board (type_id, p_id, loginid, password, title, content)
-VALUES
-    (3, 0, 'm', 'm', '공지사항', '공지사항입니다');
 
 -- 댓글 테이블 정의
 CREATE TABLE comment (

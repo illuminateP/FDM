@@ -12,5 +12,3 @@ router.get("/user-info", (req, res) => {
 
 module.exports = router;
 
-
-module.exports = router;

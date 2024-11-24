@@ -39,11 +39,6 @@ app.use('/api/', rootRouter);
 app.use('/api/auth', authRouter); 
 app.use('/api/board', boardRouter);
 
-// 한글 헤더 사용
-app.use((req, res, next) => {
-    res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    next();
-});
 
 app.get('/favicon.ico', (req, res) => res.writeHead(404));
 

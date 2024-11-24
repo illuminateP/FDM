@@ -25,7 +25,17 @@ module.exports = {
                 point: 0,
                 grade: "N/A",
                 class: "N/A",
-                name: 'proxy'
+                name: 'GUEST'
+            });
+        }
+        
+        // 프록시 사용자 처리
+        if(loginid == 'Guest'){
+            return res.json({
+                point: 0,
+                grade: "N/A",
+                class: "N/A",
+                name: 'GUEST'
             });
         }
 
@@ -40,14 +50,19 @@ module.exports = {
             }
 
             if (results.length === 0) {
-                return res.status(404).json({ error: "사용자를 찾을 수 없습니다." });
+                return res.json({
+                    point: 0,
+                    grade: "N/A",
+                    class: "N/A",
+                    name: 'GUEST'
+                });
             }
 
             // 사용자 정보 반환
             const { point, grade, class: userClass, name } = results[0];
-            console.log(results[0]);
 
             res.json({
+                name: name || "N/A",
                 point: point || 0,
                 grade: grade || "N/A",
                 class: userClass || "N/A"
