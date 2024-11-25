@@ -1,37 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const updatePostForm = document.getElementById('updatePostForm');
+    const form = document.querySelector('form');
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
 
-    if (updatePostForm) {
-        updatePostForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
+        try {
+            const response = await fetch('/board/update_process', {
+                method: 'POST',
+                body: formData
+            });
 
-            const formData = new FormData(updatePostForm);
-            const postData = {
-                boardId: formData.get('boardId'),
-                typeId: formData.get('typeId'),
-                title: formData.get('title'),
-                password: formData.get('password'),
-                content: formData.get('content'),
-            };
-
-            try {
-                const response = await fetch('/api/board/update_process', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(postData),
-                });
-
-                if (response.ok) {
-                    alert('게시글이 성공적으로 수정되었습니다!');
-                    window.location.href = `/board/view/${postData.typeId}/1`;
-                } else {
-                    const error = await response.json();
-                    alert(`게시글 수정 실패: ${error.message}`);
-                }
-            } catch (err) {
-                console.error('Error updating post:', err);
-                alert('게시글 수정 중 오류가 발생했습니다.');
+            if (response.ok) {
+                alert('게시글이 성공적으로 수정되었습니다.');
+                window.location.href = `/board/view/${formData.get('type_id')}/${formData.get('pNum')}`;
+            } else {
+                alert('게시글 수정에 실패했습니다. 다시 시도해주세요.');
             }
-        });
-    }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('게시글 수정 중 오류가 발생했습니다.');
+        }
+    });
 });

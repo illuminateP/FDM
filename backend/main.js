@@ -6,6 +6,7 @@ const bodyparser = require('body-parser');
 const authRouter = require('./router/authRouter');
 const rootRouter = require('./router/rootRouter');
 const boardRouter = require('./router/boardRouter');
+const uploadRouter = require('./router/uploadRouter');
 
 // 세션 DB 정의
 const options = {
@@ -35,9 +36,10 @@ app.use(bodyparser.json());
 app.use(express.static('public'));
 
 // 라우터 등록
-app.use('/api/', rootRouter);
+app.use('/api', rootRouter);
 app.use('/api/auth', authRouter); 
 app.use('/api/board', boardRouter);
+app.use('/api/image', uploadRouter);  
 
 
 app.get('/favicon.ico', (req, res) => res.writeHead(404));

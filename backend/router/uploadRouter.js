@@ -1,70 +1,54 @@
 const express = require('express');
 const multer = require('multer');
-const Minio = require('minio');
-const db = require('./db');
+const axios = require('axios'); // axios로 변경
+const fs = require('fs');
+const router = express.Router();
 
-const uploadRouter = express.Router();
-const upload = multer({ storage: multer.memoryStorage() });
+// Multer 설정 (파일을 임시 저장)
+const upload = multer({ dest: 'uploads/' });
 
-// MiniO 클라이언트 설정
-const minioClient = new Minio.Client({
-    endPoint: 'minio-container',
-    port: 9000,
-    useSSL: false,
-    accessKey: 'minioadmin',
-    secretKey: 'minioadmin'
-});
-
-// 업로드 라우터
-uploadRouter.post('/upload', upload.single('file'), (req, res) => {
-    if (!req.session.is_logined) {
-        return res.status(401).json({ success: false, message: '로그인이 필요합니다.' });
-    }
-
+// 파일 업로드 핸들러
+router.post('/upload', upload.single('file'), async (req, res) => {
+    console.log('uploadRouter called');
     const file = req.file;
+
     if (!file) {
-        return res.status(400).json({ success: false, message: '파일이 없습니다.' });
+        return res.status(400).json({ success: false, message: '파일이 업로드되지 않았습니다.' });
     }
 
-    const bucketName = 'uploads';
-    const objectName = `${Date.now()}_${file.originalname}`;
+    try {
+        // NGINX 리버스 프록시 경로를 통해 MinIO로 전송
+        const minioUploadUrl = 'http://nginx-container/image/uploads/' + file.filename;
 
-    // MiniO에 파일 업로드
-    minioClient.putObject(bucketName, objectName, file.buffer, file.size, (err, etag) => {
-        if (err) {
-            console.error('파일 업로드 실패:', err);
-            return res.status(500).json({ success: false, message: '파일 업로드 실패' });
+        // 파일의 Content-Length를 가져오기 위해 파일 크기 계산
+        const fileSize = fs.statSync(file.path).size;
+
+        const response = await axios.put(minioUploadUrl, fs.createReadStream(file.path), {
+            headers: {
+                'Content-Type': file.mimetype,
+                'Content-Length': fileSize, // 파일의 길이 설정
+            },
+        });
+
+        if (response.status === 200) {
+            console.log('파일 업로드 성공.');
+
+            // 임시 파일 삭제
+            fs.unlink(file.path, (unlinkErr) => {
+                if (unlinkErr) {
+                    console.error('임시 파일 삭제 오류:', unlinkErr);
+                }
+            });
+
+            res.status(200).json({ success: true, message: '파일 업로드 성공!' });
+        } else {
+            console.error('MinIO 업로드 오류:', response.statusText);
+            res.status(500).json({ success: false, message: '파일 업로드 중 오류가 발생했습니다.' });
         }
-
-        console.log('파일 업로드 성공:', etag);
-
-        // 사용자 포인트 증가
-        const query = `UPDATE person SET point = point + 1 WHERE loginid = ?`;
-        db.query(query, [req.session.loginid], (error, result) => {
-            if (error) {
-                console.error('포인트 업데이트 오류:', error);
-                return res.status(500).json({ success: false, message: '포인트 업데이트 실패' });
-            }
-
-            res.status(200).json({ success: true, message: '업로드 성공!' });
-        });
-    });
-});
-
-// MiniO에 버킷 생성
-minioClient.bucketExists('uploads', (err, exists) => {
-    if (err) {
-        return console.error('버킷 확인 실패:', err);
-    }
-
-    if (!exists) {
-        minioClient.makeBucket('uploads', 'us-east-1', (err) => {
-            if (err) {
-                return console.error('버킷 생성 실패:', err);
-            }
-            console.log('uploads 버킷이 성공적으로 생성되었습니다.');
-        });
+    } catch (error) {
+        console.error('파일 업로드 오류:', error);
+        res.status(500).json({ success: false, message: '파일 업로드 중 오류가 발생했습니다.' });
     }
 });
 
-module.exports = uploadRouter;
+module.exports = router;

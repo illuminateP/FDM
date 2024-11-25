@@ -72,11 +72,15 @@ services:
     networks:
       - app-network
     environment:
-      MINIO_ACCESS_KEY: minioadmin
-      MINIO_SECRET_KEY: minioadmin
-    command: server /data
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001" # 관리 콘솔 포트
     volumes:
-    - ./miniO:/data # 로컬 miniO 디렉토리를 MinIO 컨테이너의 /data에 마운트
+      - ./miniO:/data
+      - ./init:/docker-entrypoint-init.d # 초기화 스크립트 마운트
     restart: always
     
 networks:

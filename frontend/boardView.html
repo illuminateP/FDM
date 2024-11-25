@@ -13,28 +13,39 @@
     <div id="tabContainer">
         <button id="tabButton">☰</button>
         <div id="tabs">
-            <a href="/home.html">Home</a>
+            <a href="/test.html">Home</a>
             <br>
             <a href="/uploadTest.html">이미지 업로드 하러 가기</a>
             <br>
-            <a href="/board2">데이터셋 라벨링 하러 가기</a>
+            <a href="/test.html">데이터셋 라벨링 하러 가기</a>
             <br>
             <a href="/boardView.html">게시판 보기</a>
             <br>
-            <a href="/board4">데이터셋 상점 보기</a>
+            <a href="/test.html">데이터셋 상점 보기</a>
             <br><br>
             <button id="authButton">로그인</button>
         </div>
     </div>
-    <div id = "boardsContainer">
 
-    </div>
-    <div class="write-button">
-        <!-- 글 작성 버튼은 boardView.js에서 조건부로 추가 -->
-    </div>
+    <div id="content">
+        <div class="container">
+            <h1 id="board-title">게시판</h1>
+            <div id="boards" class="mt-4">
+                <!-- 게시글 목록이 여기에 추가됩니다 -->
+            </div>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                <div class="write-button">
+                    <!-- 글쓰기 버튼이 여기에 추가됩니다 -->
+                </div>
+            </div>
+            <div id="pagination" class="mt-4">
+                <!-- 페이지 네이션 버튼이 여기에 추가됩니다 -->
+            </div>
+        </div>
 
-    <script src="scripts/boardView.js"></script>
-    <script src="scripts/tab.js"></script>
+            <script src="scripts/boardView.js"></script>
+        </div>
+    </div>
 </body>
 
 </html>
