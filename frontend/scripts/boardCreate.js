@@ -16,14 +16,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const formData = new FormData(form);
-            formData.append('loginid', loginid);
-            formData.append('typeid', type_id);
+
+            // 폼의 데이터를 객체로 생성
+            const formData = {
+                loginid: loginid,
+                typeid: type_id,
+                title: form.elements['title'].value,
+                content: form.elements['content'].value,
+                password: form.elements['password'].value
+            };
 
             try {
                 const response = await fetch('http://gctask.com/api/board/create_process', {
                     method: 'POST',
-                    body: formData
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
                 });
 
                 if (response.ok) {

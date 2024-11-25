@@ -1,5 +1,6 @@
 let db = require('./db');
 let sanitizehtml = require('sanitize-html');
+const path = require('path');
 
 function authIsOwner(req, res) {
     let name = 'Guest';
@@ -51,9 +52,7 @@ module.exports = {
                     }
 
                     let responseData = {
-                        who: name,
-                        login: login,
-                        board: boards || [], // 조회된 게시글 목록
+                        boards: boards || [], // 조회된 게시글 목록
                         totalPages: totalPages, // 전체 페이지 수
                         pNum: pNum, // 현재 페이지 번호
                         cls: cls
@@ -61,6 +60,39 @@ module.exports = {
                     console.log(responseData);
                     res.json(responseData);
                 });
+        });
+    },
+    detail: (req, res) => {
+        console.log('board.detail 호출됨');
+
+        // URL에서 게시글 ID 추출
+        const boardId = req.params.boardId;
+
+        const filePath = path.join(__dirname, '..', 'views', 'boardDetail.html');
+        // boardDetail.html 파일을 클라이언트로 전송
+        if (boardId == 1) {
+            res.sendFile(filePath, (err) => {
+                if (err) {
+                    console.error('Error sending file:', err);
+                    res.status(500).send('Internal Server Error');
+                }
+            });
+        }
+
+        // 게시글 상세 데이터 조회 쿼리 실행
+        db.query(`SELECT board_id, title, content, loginid, date, type_id FROM board WHERE board_id = ?`, [boardId], (err, result) => {
+            if (err) {
+                console.error('Error executing query:', err);
+                res.status(500).send('Internal Server Error');
+                return;
+            }
+
+            // 게시글이 존재하지 않는 경우
+            if (result.length === 0) {
+                res.status(404).send('Board not found');
+                return;
+            }
+
         });
     },
 

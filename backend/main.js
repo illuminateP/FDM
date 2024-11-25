@@ -29,7 +29,7 @@ app.use(session({
     store: sessionStore,
 }));
 
-app.use(bodyparser.urlencoded({ extended: false }));
+app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json());
 
 // 정적 파일 제공
@@ -40,7 +40,6 @@ app.use('/api', rootRouter);
 app.use('/api/auth', authRouter); 
 app.use('/api/board', boardRouter);
 app.use('/api/image', uploadRouter);  
-
 
 app.get('/favicon.ico', (req, res) => res.writeHead(404));
 
