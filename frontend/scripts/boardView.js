@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const boardItem = document.createElement('div');
                 boardItem.classList.add('board-item');
                 boardItem.innerHTML = `
-                    <h2><a href="/api/board/detail/${board.board_id}">${board.title}</a></h2>
+                    <h2><a href="/boardDetail.html?boardId=${board.board_id}">${board.title}</a></h2>
                     <p>작성자: ${board.name} | 작성일: ${board.date}</p>
                 `;
                 boardsContainer.appendChild(boardItem);

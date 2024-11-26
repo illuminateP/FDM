@@ -1,6 +1,7 @@
 let db = require('./db');
 let sanitizehtml = require('sanitize-html');
 const path = require('path');
+const { getElementsByTagType } = require('domutils');
 
 function authIsOwner(req, res) {
     let name = 'Guest';
@@ -20,6 +21,7 @@ module.exports = {
         let { name, login, cls } = authIsOwner(req, res);
         let sanitized_type_id = 3; // 고정된 게시판 타입 ID
         let pNum = req.query.pNum || 1; // 페이지 번호, 기본값은 1
+
 
         let sqlCount = `SELECT COUNT(*) AS total FROM board WHERE type_id = ?`;
 
@@ -68,32 +70,39 @@ module.exports = {
         // URL에서 게시글 ID 추출
         const boardId = req.params.boardId;
 
-        const filePath = path.join(__dirname, '..', 'views', 'boardDetail.html');
-        // boardDetail.html 파일을 클라이언트로 전송
-        if (boardId == 1) {
-            res.sendFile(filePath, (err) => {
-                if (err) {
-                    console.error('Error sending file:', err);
-                    res.status(500).send('Internal Server Error');
-                }
-            });
-        }
+        const { name, loginid, cls } = authIsOwner(req, res); // 로그인 정보 가져오기
 
-        // 게시글 상세 데이터 조회 쿼리 실행
-        db.query(`SELECT board_id, title, content, loginid, date, type_id FROM board WHERE board_id = ?`, [boardId], (err, result) => {
+        const sql = `SELECT b.board_id, b.title, b.date, b.content, p.name AS writer, b.loginid
+                     FROM board b
+                     INNER JOIN person p ON b.loginid = p.loginid
+                     WHERE b.board_id = ?`;
+
+        db.query(sql, [boardId], (err, results) => {
             if (err) {
-                console.error('Error executing query:', err);
+                console.error('Error fetching board details:', err);
                 res.status(500).send('Internal Server Error');
                 return;
             }
 
-            // 게시글이 존재하지 않는 경우
-            if (result.length === 0) {
-                res.status(404).send('Board not found');
+            if (results.length === 0) {
+                res.status(404).send('게시글을 찾을 수 없습니다.');
                 return;
             }
 
+            const board = results[0];
+            const isOwner = board.loginid === loginid; // 게시글 작성자인지 확인
+
+            res.json({
+                board_id: board.board_id,
+                title: board.title,
+                date: board.date,
+                content: board.content,
+                writer: board.writer,
+                isOwner, // 작성자인지 여부
+                cls, // 사용자 권한
+            });
         });
+
     },
 
     create: (req, res) => {
@@ -113,17 +122,18 @@ module.exports = {
         console.log('board.create_process');
 
         let post = req.body;
-        console.log(post);
 
         let sanitized_type_id = 3; // 고정된 type_id
         let sanitized_login_id = sanitizehtml(post.loginid);
         let sanitized_password = sanitizehtml(post.password);
         let sanitized_title = sanitizehtml(post.title);
         let sanitized_content = sanitizehtml(post.content);
+        let p_id = 0; // 댓글에 사용할 기능, 현재는 사용 x
 
-        db.query(`INSERT INTO board (type_id, loginid, password, title, date, content) VALUES (?, ?, ?, ?, NOW(), ?)`,
+        db.query(`INSERT INTO board (type_id, p_id, loginid, password, title, date, content) VALUES (?, ?, ?, ?, ?, NOW(), ?)`,
             [
                 sanitized_type_id,
+                p_id,
                 sanitized_login_id,
                 sanitized_password,
                 sanitized_title,
@@ -139,13 +149,81 @@ module.exports = {
                 res.redirect(`/api/board/view`);
             });
     },
+    update: (req, res) => {
+        console.log('board.update');
+
+        // 요청 데이터에서 boardId와 password 추출
+        const { boardId, password } = req.body;
+
+        // 유효성 검사
+        if (!boardId || !password) {
+            res.status(400).send("잘못된 요청입니다. 게시글 ID와 비밀번호를 제공해야 합니다.");
+            return;
+        }
+
+        // 데이터베이스에서 게시글 비밀번호 조회
+        const sql = `SELECT * FROM board WHERE board_id = ?`;
+        db.query(sql, [boardId], (err, results) => {
+            if (err) {
+                console.error("DB 조회 오류:", err);
+                res.status(500).send("서버 오류가 발생했습니다.");
+                return;
+            }
+
+            if (results.length === 0) {
+                res.status(404).send("게시글을 찾을 수 없습니다.");
+                return;
+            }
+
+            const board = results[0];
+
+            // 비밀번호 비교
+            if (board.password === password) {
+                // 비밀번호가 일치하면 수정 화면으로 이동
+                res.status(200).send("수정 권한 확인됨");
+            } else {
+                // 비밀번호가 일치하지 않으면 오류 반환
+                res.status(403).send("비밀번호가 일치하지 않습니다.");
+            }
+        });
+    },
+
+    update_process: (req, res) => {
+        console.log('board.update_process');
+
+        let post = req.body;
+        let sanitized_login_id = req.session.loginid;
+        let sanitized_board_id = sanitizehtml(post.boardId);
+        let sanitized_password = sanitizehtml(post.password);
+        let sanitized_title = sanitizehtml(post.title);
+        let sanitized_content = sanitizehtml(post.content);
+
+
+        db.query(
+            `UPDATE board 
+             SET title = ?, content = ?, loginid = ?, password =?, date = NOW() 
+             WHERE board_id = ?`,
+            [sanitized_title, sanitized_content, sanitized_login_id, sanitized_password, sanitized_board_id],
+            (err, result) => {
+                if (err) {
+                    console.error("DB 업데이트 오류:", err);
+                    res.status(500).send('Internal Server Error');
+                    return;
+                }
+
+                console.log("게시글 수정 완료:", result);
+                res.writeHead(302, { location: `/boardDetail.html?boardId=${sanitized_board_id}` });
+                res.end();
+            }
+        );
+    },
+
 
     delete_process: (req, res) => {
         console.log('board.delete_process');
 
         let sanitized_board_id = sanitizehtml(req.params.boardId);
-        let sanitized_type_id = 3; // 고정된 type_id
-        let sanitized_pNum = sanitizehtml(req.params.pNum);
+
 
         db.query(`SELECT * FROM board WHERE board_id = ?`, [sanitized_board_id], (err, results) => {
             if (err) {
@@ -153,7 +231,7 @@ module.exports = {
                 res.status(500).send('Internal Server Error');
                 return;
             }
-            let pw = results[0].password;
+
             let { login, name, cls } = authIsOwner(req, res);
 
             if (cls == 'MNG' || name == results[0].loginid) {
@@ -163,7 +241,7 @@ module.exports = {
                         res.status(500).send('Internal Server Error');
                         return;
                     }
-                    res.writeHead(302, { location: `/board/view/${sanitized_type_id}/${sanitized_pNum}` });
+                    res.writeHead(302, { location: `/boardDetail.html?boardId=${sanitized_board_id}` });
                     res.end();
                 });
             } else {
@@ -172,7 +250,7 @@ module.exports = {
                     <script language="JavaScript" type="text/javascript">
                         alert("비밀번호가 일치하지 않습니다.");
                         setTimeout(() => {
-                            location.href = 'http://localhost:3000/board/view/${sanitized_type_id}/${sanitized_pNum}';
+                            location.href = /boardDetail.html?boardId=${sanitized_board_id};
                         }, 1000);
                     </script>`);
             }

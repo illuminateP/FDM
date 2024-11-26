@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 
 <head>
     <meta charset="UTF-8">
@@ -26,41 +26,47 @@
             <button id="authButton">로그인</button>
         </div>
     </div>
+    <div id="content">
+        <div class="container">
+            <h2>게시글 수정</h2>
+            <form id="createForm">
+                <div class="mb-3">
+                    <label class="form-label" for="id">제목</label>
+                    <input class="form-control" type="text" name="title" style="width:300px;" required />
+                </div>
+                <br>
+                <div class="mb-3">
+                    <label class="form-label" for="id">작성자</label>
+                    <input class="form-control" type="text" id="writer" name="writer" style="width:300px;" disabled />
+                </div>
+                <br>
+                <div class="mb-3">
+                    <label class="form-label" for="id">내용</label>
+                    <textarea class="form-control" name="content" style="width:800px;height: 200px;"
+                        required></textarea>
+                </div>
+                <br>
+                <div class="mb-3">
+                    <label class="form-label" for="id">갱신삭제시 비밀번호</label>
+                    <input class="form-control" type="password" name="password" style="width:300px;" required />
+                </div>
+                <br>
+                <br>
+                <div class="mb-3">
+                    <button class="btn btn-outline-primary btn-sm" type="submit">생성</button>
+                </div>
+                <br>
+                <div class="mb-3">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="/boardView.html"> <button type="button" class="btn btn-info me-md-2">목록</button> </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 
-    <div class="container">
-        <h2><%- title %> 수정</h2>
-        <form action="/board/update_process" method="post">
-            <input type="hidden" name="type_id" value="<%- board[0].type_id %>">
-            <input type="hidden" name="loginid" value="<%- login_id %>">
-            <input type="hidden" name="boardId" value="<%- boardid %>">
-            <input type="hidden" name="pNum" value="<%- pNum %>">
-            <div class="mb-3">
-                <label class="form-label" for="id">제목</label>
-                <input class="form-control" type="text" name="title" value = "<%- board[0].title %>" style="width:300px;" />
-            </div>
-            <div class="mb-3">
-                <label class="form-label" for="id">작성자</label>
-                <input class="form-control" type="text" name="writer" value="<%- who %>" style="width:300px;" disabled />
-            </div>
-            <div class="mb-3">
-                <label class="form-label" for="id">내용</label>
-                <textarea class="form-control" name="content" style="width:800px;height: 200px;" ><%- board[0].content %></textarea>
-            </div>
-            <div class="mb-3">
-                <label class="form-label" for="id">갱신삭제시 비밀번호</label>
-                <input class="form-control" type="text" name="password" style="width:300px;" />
-            </div>
-            <button class="btn btn-outline-primary btn-sm" type="submit">수정</button>
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <a href="/board/view/<%- board[0].type_id %>/<%- pNum %>"> <button type="button" class="btn btn-info me-md-2">목록</button> </a>
-            </div>
-        </form>
-    </div>
-    
-    <script src="scripts/boardCreate.js"></script>
-    <script src="scripts/tab.js"></script>
-    <div class="write-button">
-        <!-- 글 작성 버튼은 boardView.js에서 조건부로 추가 -->
-    </div>
+    <script src="/scripts/boardUpdate.js"></script>
+    <script src="/scripts/tab.js"></script>
 </body>
+
 </html>
