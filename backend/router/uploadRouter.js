@@ -1,11 +1,21 @@
 const express = require('express');
 const multer = require('multer');
-const axios = require('axios'); // axios로 변경
+const Minio = require('minio');
 const fs = require('fs');
 const router = express.Router();
 
 // Multer 설정 (파일을 임시 저장)
 const upload = multer({ dest: 'uploads/' });
+
+// MinIO 클라이언트 설정 (리버스 프록시를 통해 접근)
+const minioClient = new Minio.Client({
+    endPoint: 'gctask.com', // 도커 네트워크에서 접근 가능한 NGINX 컨테이너 이름 사용
+    port: 80, // NGINX 프록시 포트
+    useSSL: false,
+    accessKey: 'uploads',
+    secretKey: 'uploads',
+    pathStyle: true
+});
 
 // 파일 업로드 핸들러
 router.post('/upload', upload.single('file'), async (req, res) => {
@@ -17,34 +27,19 @@ router.post('/upload', upload.single('file'), async (req, res) => {
     }
 
     try {
-        // NGINX 리버스 프록시 경로를 통해 MinIO로 전송
-        const minioUploadUrl = 'http://nginx-container/image/uploads/' + file.filename;
+        const bucketName = 'uploads';
+        const objectName = file.filename;
+        const filePath = file.path;
 
-        // 파일의 Content-Length를 가져오기 위해 파일 크기 계산
-        const fileSize = fs.statSync(file.path).size;
-
-        const response = await axios.put(minioUploadUrl, fs.createReadStream(file.path), {
-            headers: {
-                'Content-Type': file.mimetype,
-                'Content-Length': fileSize, // 파일의 길이 설정
-            },
+        // MinIO 클라이언트를 사용하여 파일을 업로드합니다.
+        minioClient.fPutObject(bucketName, objectName, filePath, (err, etag) => {
+            if (err) {
+                console.error('File upload error:', err);
+                return res.status(500).json({ success: false, message: '파일 업로드 중 오류가 발생했습니다.' });
+            }
+            console.log('File uploaded successfully:', etag);
+            res.status(200).json({ success: true, message: '파일이 성공적으로 업로드되었습니다.', etag });
         });
-
-        if (response.status === 200) {
-            console.log('파일 업로드 성공.');
-
-            // 임시 파일 삭제
-            fs.unlink(file.path, (unlinkErr) => {
-                if (unlinkErr) {
-                    console.error('임시 파일 삭제 오류:', unlinkErr);
-                }
-            });
-
-            res.status(200).json({ success: true, message: '파일 업로드 성공!' });
-        } else {
-            console.error('MinIO 업로드 오류:', response.statusText);
-            res.status(500).json({ success: false, message: '파일 업로드 중 오류가 발생했습니다.' });
-        }
     } catch (error) {
         console.error('파일 업로드 오류:', error);
         res.status(500).json({ success: false, message: '파일 업로드 중 오류가 발생했습니다.' });

@@ -74,6 +74,8 @@ services:
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ACCESS_KEY: "uploads"
+      MINIO_SECRET_KEY: "uploads"
     command: server /data --console-address ":9001"
     ports:
       - "9000:9000"
@@ -81,6 +83,8 @@ services:
     volumes:
       - ./miniO:/data
       - ./init:/docker-entrypoint-init.d # 초기화 스크립트 마운트
+
+
     restart: always
     
 networks:
