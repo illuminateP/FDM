@@ -7,7 +7,7 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
     formData.append('file', fileInput.files[0]);
     
     try {
-        const response = await fetch('http://gctask.com/api/image/upload', {
+        const response = await fetch('/api/image/upload', {
             method: 'POST',
             body: formData
         });

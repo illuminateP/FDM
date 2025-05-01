@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const response = await fetch('http://gctask.com/api/auth/register_process', {
+            const response = await fetch('/api/auth/register_process', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

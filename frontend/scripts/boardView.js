@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
         // 게시판 데이터 가져오기
-        const response = await fetch('http://gctask.com/api/board/view');
+        const response = await fetch('/api/board/view');
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);

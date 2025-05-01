@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const response = await fetch('http://gctask.com/api/auth/login_process', {
+            const response = await fetch('/api/auth/login_process', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 프록시 로그인 버튼 클릭 이벤트
     document.getElementById('proxyBtn').onclick = async function () {
         try {
-            const response = await fetch('http://gctask.com/api/auth/proxy_login', {
+            const response = await fetch('/api/auth/proxy_login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

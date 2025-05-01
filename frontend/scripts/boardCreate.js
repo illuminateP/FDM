@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
         // 서버에서 사용자 정보 가져오기
-        const response = await fetch('http://gctask.com/api/board/create');
+        const response = await fetch('/api/board/create');
         if (!response.ok) {
             throw new Error('사용자 정보를 불러오는 데 실패했습니다.');
         }
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             };
 
             try {
-                const response = await fetch('http://gctask.com/api/board/create_process', {
+                const response = await fetch('/api/board/create_process', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

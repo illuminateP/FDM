@@ -81,6 +81,20 @@ services:
       - ./miniO:/data
     restart: always
 
+  truffle:
+    build:
+      context: ./truffle
+      dockerfile: Dockerfile
+    container_name: truffle-container
+    networks:
+      - app-network
+    volumes:
+      - ./truffle:/app
+    # 개발용 포트(필요시)
+    ports:
+      - "9545:9545"  # truffle develop 네트워크 포트
+    tty: true
+    
 networks:
   app-network:
     driver: bridge
